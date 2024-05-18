@@ -17,8 +17,19 @@ const typeDefs = gql`
     password: String!
   }
 
+  input LoginUserInput {
+    email: String!
+    password: String!
+  }
+
+  type AuthPayload {
+    token: String!
+    user: User!
+  }
+
   type Mutation {
     createUser(input: CreateUserInput!): User!
+    loginUser(input: LoginUserInput!): AuthPayload!
   }
 `;
 

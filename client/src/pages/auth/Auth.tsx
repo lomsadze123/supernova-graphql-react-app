@@ -1,6 +1,6 @@
 import useAuth from "../../hooks/useAuth";
 import { useQuery } from "@apollo/client";
-import GET_USERS from "../../actions/getUser";
+import GET_USERS from "../../actions/userActions/getUser";
 import AuthErrorMessage from "../../components/errors/AuthErrorMessage";
 
 const Auth = () => {
@@ -93,7 +93,7 @@ const Auth = () => {
                   <input
                     {...register("username")}
                     className="w-full outline-none text-gray-800"
-                    type="password"
+                    type="text"
                     placeholder="e.g Beka"
                     id="username"
                   />

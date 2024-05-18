@@ -1,4 +1,6 @@
 import prisma from "../../../lib/prisma.js";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 const userResolver = {
   Query: {
@@ -16,17 +18,50 @@ const userResolver = {
   Mutation: {
     createUser: async (_, { input }) => {
       try {
+        const hashedPassword = await bcrypt.hash(input.password, 10);
+
         const newUser = await prisma.user.create({
           data: {
             username: input.username,
             email: input.email,
-            password: input.password,
+            password: hashedPassword,
           },
         });
         return newUser;
       } catch (error) {
         console.error("Error creating user:", error);
         throw new Error("Unable to create user");
+      }
+    },
+    loginUser: async (_, { input }) => {
+      try {
+        const user = await prisma.user.findUnique({
+          where: {
+            email: input.email,
+          },
+        });
+
+        console.log("user", user);
+
+        if (!user) {
+          throw new Error("User not found");
+        }
+
+        const valid = await bcrypt.compare(input.password, user.password);
+
+        if (!valid) {
+          throw new Error("Invalid password");
+        }
+
+        const token = jwt.sign({ userId: user.id }, process.env.SECRET_KEY, {
+          expiresIn: "1h",
+        });
+
+        console.log("login successful");
+        return { token, user };
+      } catch (error) {
+        console.error("Error logging in:", error);
+        throw new Error("Unable to log in");
       }
     },
   },
