@@ -1,6 +1,6 @@
 import useAuth from "../../hooks/useAuth";
 import { useQuery } from "@apollo/client";
-import GET_USERS from "../../actions/userActions/getUser";
+import { GET_USERS } from "../../actions/userActions/getUser";
 import AuthErrorMessage from "../../components/errors/AuthErrorMessage";
 
 const Auth = () => {
@@ -11,15 +11,15 @@ const Auth = () => {
   console.log(data?.users);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <main className="min-h-screen flex items-center justify-center bg-gray-100">
       <form className="p-8 max-w-md mx-auto" onSubmit={handleSubmit} noValidate>
         <div className="mt-10 md:mt-20">
           <h2 className="text-2xl font-bold text-gray-900 mb-3 md:text-3xl">
             {formType === "signin" ? "Login" : "Create account"}
           </h2>
-          <p className="text-gray-700">
+          <p className="text-gray-700 text-xl">
             {formType === "signin"
-              ? "Add your details below to get back into the app"
+              ? "Welcome back! Please log in to continue"
               : "Let's get you started sharing your links!"}
           </p>
           <div className="flex flex-col gap-5 mt-6">
@@ -126,7 +126,7 @@ const Auth = () => {
           </div>
         </div>
       </form>
-    </div>
+    </main>
   );
 };
 

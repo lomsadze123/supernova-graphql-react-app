@@ -4,12 +4,19 @@ import express from "express";
 import { ApolloServer } from "apollo-server-express";
 import typeDefs from "./src/graphql/schema.js";
 import resolvers from "./src/graphql/resolvers/index.js";
+import getUser from "./src/utils/jwt.js";
 
 const app = express();
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  context: async ({ req }) => {
+    const token = req.headers.authorization?.split(" ")[1] || "";
+    console.log("token", token);
+    const user = await getUser(token);
+    return { user };
+  },
 });
 
 await server.start();

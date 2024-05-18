@@ -14,7 +14,19 @@ const userResolver = {
         throw new Error("Unable to fetch users");
       }
     },
+
+    currentUser: async (_, args, { user }) => {
+      if (!user) {
+        throw new Error("Not authenticated");
+      }
+      return prisma.user.findUnique({
+        where: {
+          id: user.id,
+        },
+      });
+    },
   },
+
   Mutation: {
     createUser: async (_, { input }) => {
       try {
@@ -27,12 +39,14 @@ const userResolver = {
             password: hashedPassword,
           },
         });
+
         return newUser;
       } catch (error) {
         console.error("Error creating user:", error);
         throw new Error("Unable to create user");
       }
     },
+
     loginUser: async (_, { input }) => {
       try {
         const user = await prisma.user.findUnique({

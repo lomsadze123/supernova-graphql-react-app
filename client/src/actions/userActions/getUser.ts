@@ -10,4 +10,14 @@ const GET_USERS = gql`
   }
 `;
 
-export default GET_USERS;
+const GET_CURRENT_USER = gql`
+  query {
+    currentUser {
+      id
+      username
+      email
+    }
+  }
+`;
+
+export { GET_USERS, GET_CURRENT_USER };
