@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
 import { ApolloServer, gql } from "apollo-server-express";
-import { PrismaClient } from "@prisma/client";
+import prisma from "./lib/prisma.js";
 
 const app = express();
 
@@ -11,8 +11,6 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("Hello, world!");
 });
-
-const prisma = new PrismaClient();
 
 async function fetchUsers() {
   try {
@@ -25,10 +23,7 @@ async function fetchUsers() {
   }
 }
 
-fetchUsers().catch((error) => {
-  console.error("Error occurred during application startup:", error);
-  process.exit(1); // Exit the application with an error code
-});
+fetchUsers();
 
 app.listen(process.env.PORT || 3001, () =>
   console.log("listening on port " + process.env.PORT || 3001)

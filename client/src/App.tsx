@@ -1,5 +1,14 @@
+import { Route, Routes } from "react-router-dom";
+import Auth from "./pages/auth/Auth";
+
 const App = () => {
-  return <div className="text-3xl">App</div>;
+  return (
+    <div className="">
+      <Routes>
+        <Route path="/" element={<Auth />} />
+      </Routes>
+    </div>
+  );
 };
 
 export default App;
