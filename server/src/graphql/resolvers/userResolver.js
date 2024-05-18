@@ -14,13 +14,13 @@ const userResolver = {
     },
   },
   Mutation: {
-    createUser: async (_, args) => {
+    createUser: async (_, { input }) => {
       try {
         const newUser = await prisma.user.create({
           data: {
-            username: args.username,
-            email: args.email,
-            password: args.password,
+            username: input.username,
+            email: input.email,
+            password: input.password,
           },
         });
         return newUser;

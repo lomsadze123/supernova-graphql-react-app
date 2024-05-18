@@ -11,8 +11,14 @@ const typeDefs = gql`
     email: String!
   }
 
+  input CreateUserInput {
+    username: String!
+    email: String!
+    password: String!
+  }
+
   type Mutation {
-    createUser(username: String!, email: String!, password: String!): User!
+    createUser(input: CreateUserInput!): User!
   }
 `;
 

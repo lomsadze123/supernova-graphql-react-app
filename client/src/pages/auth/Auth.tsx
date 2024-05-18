@@ -1,23 +1,18 @@
 import useAuth from "../../hooks/useAuth";
+import { useQuery } from "@apollo/client";
+import GET_USERS from "../../actions/getUser";
+import AuthErrorMessage from "../../components/errors/AuthErrorMessage";
 
 const Auth = () => {
-  const {
-    setFormType,
-    handleSubmit,
-    register,
-    reset,
-    onSubmit,
-    formType,
-    errors,
-  } = useAuth();
+  const { setFormType, handleSubmit, register, reset, formType, errors } =
+    useAuth();
+
+  const { data } = useQuery(GET_USERS); //  loading, error,
+  console.log(data?.users);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <form
-        className="p-8 max-w-md mx-auto"
-        onSubmit={handleSubmit(onSubmit)}
-        noValidate
-      >
+      <form className="p-8 max-w-md mx-auto" onSubmit={handleSubmit} noValidate>
         <div className="mt-10 md:mt-20">
           <h2 className="text-2xl font-bold text-gray-900 mb-3 md:text-3xl">
             {formType === "signin" ? "Login" : "Create account"}
@@ -46,13 +41,11 @@ const Auth = () => {
                   {...register("email")}
                   className="w-full outline-none text-gray-800"
                   type="email"
-                  placeholder="e.g. alex@email.com"
+                  placeholder="e.g. beka@gmail.com"
                   id="email"
                 />
               </div>
-              {errors.email && (
-                <p className="text-xs text-red-500">{errors.email.message}</p>
-              )}
+              <AuthErrorMessage error={errors.email} />
             </div>
             <div>
               <label
@@ -75,48 +68,37 @@ const Auth = () => {
                   placeholder={
                     formType === "signin"
                       ? "Enter your password"
-                      : "At least 8 characters"
+                      : "At least 6 characters"
                   }
                   id="password"
                 />
               </div>
-              {errors.password && (
-                <p className="text-xs text-red-500">
-                  {errors.password.message}
-                </p>
-              )}
+              <AuthErrorMessage error={errors.password} />
             </div>
             {formType === "signup" && (
               <div>
                 <label
                   className={`text-xs ${
-                    errors.confirm ? "text-red-500" : "text-gray-900"
+                    errors.username ? "text-red-500" : "text-gray-900"
                   }`}
-                  htmlFor="confirm"
+                  htmlFor="username"
                 >
-                  Confirm password
+                  User name
                 </label>
                 <div
                   className={`flex items-center gap-3 bg-white border ${
-                    errors.confirm ? "border-red-500" : "border-gray-300"
+                    errors.username ? "border-red-500" : "border-gray-300"
                   } rounded-lg p-3 mt-1`}
                 >
                   <input
-                    {...register("confirm")}
+                    {...register("username")}
                     className="w-full outline-none text-gray-800"
                     type="password"
-                    placeholder="At least 8 characters"
-                    id="confirm"
+                    placeholder="e.g Beka"
+                    id="username"
                   />
                 </div>
-                {errors.confirm && (
-                  <p className="text-xs text-red-500">
-                    {errors.confirm.message}
-                  </p>
-                )}
-                <p className="text-xs text-gray-700 mt-2">
-                  Password must contain at least 8 characters
-                </p>
+                <AuthErrorMessage error={errors.username} />
               </div>
             )}
             <button
