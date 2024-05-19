@@ -4,12 +4,14 @@ const typeDefs = gql`
   type User {
     id: ID!
     email: String!
+    signInCount: Int!
     token: String
   }
 
   type Query {
     users: [User]
     currentUser: User
+    globalSignInCount: Int!
   }
 
   type Mutation {
@@ -20,6 +22,10 @@ const typeDefs = gql`
   input UserCredentialsInput {
     email: String!
     password: String!
+  }
+
+  type Subscription {
+    globalSignInCount: Int!
   }
 `;
 

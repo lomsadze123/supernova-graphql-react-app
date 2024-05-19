@@ -14,8 +14,26 @@ const GET_CURRENT_USER = gql`
     currentUser {
       id
       email
+      signInCount
     }
   }
 `;
 
-export { GET_USERS, GET_CURRENT_USER };
+const GLOBAL_SIGNIN_COUNT_QUERY = gql`
+  query globalSignInCount {
+    globalSignInCount
+  }
+`;
+
+const GLOBAL_SIGNIN_COUNT_SUBSCRIPTION = gql`
+  subscription {
+    globalSignInCount
+  }
+`;
+
+export {
+  GET_USERS,
+  GET_CURRENT_USER,
+  GLOBAL_SIGNIN_COUNT_QUERY,
+  GLOBAL_SIGNIN_COUNT_SUBSCRIPTION,
+};

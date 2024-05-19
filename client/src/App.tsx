@@ -3,7 +3,6 @@ import Auth from "./pages/auth/Auth";
 import Home from "./pages/home/Home";
 import Dashboard from "./pages/dashboard/Dashboard";
 import ErrorPage from "./pages/error/ErrorPage";
-import WebSocketComponent from "./components/WebSocketComponent/WebSocketComponent";
 import useUserContext from "./context/userContext";
 import Header from "./components/header/Header";
 
@@ -13,7 +12,6 @@ const App = () => {
 
   return (
     <>
-      <WebSocketComponent />
       {token && <Header />}
       <Routes>
         <Route path="/" element={token ? <Navigate to="/home" /> : <Auth />} />

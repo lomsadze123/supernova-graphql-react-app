@@ -7,19 +7,21 @@ import { useNavigate } from "react-router-dom";
 import useUserContext from "../context/userContext";
 
 const useAuth = () => {
-  const { setToken } = useUserContext();
+  const { setToken, refetchGlobal } = useUserContext();
   const [formType, setFormType] = useState("signin");
   const { userCredentialsSchema } = authValidation();
   const [createUser] = useMutation(CREATE_USER, {
     onCompleted: ({ createUser }) => {
       setToken(createUser.token);
       localStorage.setItem("token", createUser.token);
+      refetchGlobal();
     },
   }); // , { loading, error }
   const [loginUser] = useMutation(LOGIN_USER, {
     onCompleted: ({ loginUser }) => {
       setToken(loginUser.token);
       localStorage.setItem("token", loginUser.token);
+      refetchGlobal();
     },
   });
   const navigate = useNavigate();

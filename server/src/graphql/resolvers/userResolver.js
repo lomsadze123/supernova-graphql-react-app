@@ -1,7 +1,10 @@
 import prisma from "../../../lib/prisma.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { PubSub } from "graphql-subscriptions";
 
+const pubsub = new PubSub();
+const SIGNIN_COUNT_UPDATED = "SIGNIN_COUNT_UPDATED";
 const userResolver = {
   Query: {
     users: async () => {
@@ -25,6 +28,21 @@ const userResolver = {
         },
       });
     },
+
+    globalSignInCount: async () => {
+      try {
+        const globalSignInCount = await prisma.user.aggregate({
+          _sum: {
+            signInCount: true,
+          },
+        });
+
+        return globalSignInCount._sum.signInCount || 0;
+      } catch (error) {
+        console.error("Error calculating global sign-in count:", error);
+        throw new Error("Unable to calculate global sign-in count");
+      }
+    },
   },
 
   Mutation: {
@@ -36,6 +54,7 @@ const userResolver = {
           data: {
             email: input.email,
             password: hashedPassword,
+            signInCount: 0,
           },
         });
 
@@ -68,7 +87,19 @@ const userResolver = {
           throw new Error("Invalid password");
         }
 
-        const token = jwt.sign({ id: user.id }, process.env.SECRET_KEY);
+        const updatedUser = await prisma.user.update({
+          where: {
+            id: user.id,
+          },
+          data: {
+            signInCount: user.signInCount + 1,
+          },
+        });
+
+        const token = jwt.sign({ id: updatedUser.id }, process.env.SECRET_KEY);
+
+        const globalSignInCount = await userResolver.Query.globalSignInCount();
+        pubsub.publish(SIGNIN_COUNT_UPDATED, { globalSignInCount });
 
         console.log("login successful");
 
@@ -77,6 +108,11 @@ const userResolver = {
         console.error("Error logging in:", error);
         throw new Error("Unable to log in");
       }
+    },
+  },
+  Subscription: {
+    globalSignInCount: {
+      subscribe: () => pubsub.asyncIterator(SIGNIN_COUNT_UPDATED),
     },
   },
 };

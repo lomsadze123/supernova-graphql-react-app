@@ -1,3 +1,4 @@
+import { ApolloQueryResult, OperationVariables } from "@apollo/client";
 import { ReactNode } from "react";
 
 export interface UserContextTypes {
@@ -9,6 +10,11 @@ export interface UserContextTypes {
     token: string;
   };
   loading: boolean;
+  refetchGlobal: (
+    variables?: Partial<OperationVariables> | undefined
+  ) => Promise<ApolloQueryResult<any>>;
+  globalData: any;
+  subscriptionData: any; // change later
 }
 
 export interface UserProviderProps {

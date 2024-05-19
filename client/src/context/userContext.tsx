@@ -1,7 +1,11 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { UserContextTypes, UserProviderProps } from "../types/types";
-import { GET_CURRENT_USER } from "../actions/userActions/getUser";
-import { useQuery } from "@apollo/client";
+import {
+  GET_CURRENT_USER,
+  GLOBAL_SIGNIN_COUNT_QUERY,
+  GLOBAL_SIGNIN_COUNT_SUBSCRIPTION,
+} from "../actions/userActions/getUser";
+import { useQuery, useSubscription } from "@apollo/client";
 
 const UserContext = createContext<UserContextTypes | undefined>(undefined);
 
@@ -28,17 +32,33 @@ export const UserProvider = ({ children }: UserProviderProps) => {
     },
   });
 
+  const { data: globalData, refetch: refetchGlobal } = useQuery(
+    GLOBAL_SIGNIN_COUNT_QUERY
+  );
+  const { data: subscriptionData } = useSubscription(
+    GLOBAL_SIGNIN_COUNT_SUBSCRIPTION
+  );
+
   useEffect(() => {
     if (token) {
       refetchCurrentUser();
     }
   }, [token, refetchCurrentUser]);
 
+  const globalSignInCount = subscriptionData
+    ? subscriptionData.globalSignInCount
+    : globalData?.globalSignInCount;
+
+  console.log("globalSignInCount", globalSignInCount);
+
   const contextValue: UserContextTypes = {
     token,
     setToken,
     currentUser,
     loading,
+    refetchGlobal,
+    globalData,
+    subscriptionData,
   };
 
   return (
