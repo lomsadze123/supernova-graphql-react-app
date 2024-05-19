@@ -32,7 +32,7 @@ const userResolver = {
       try {
         const hashedPassword = await bcrypt.hash(input.password, 10);
 
-        const newUser = await prisma.user.create({
+        const user = await prisma.user.create({
           data: {
             username: input.username,
             email: input.email,
@@ -40,7 +40,9 @@ const userResolver = {
           },
         });
 
-        return newUser;
+        const token = jwt.sign({ id: user.id }, process.env.SECRET_KEY);
+
+        return { ...user, token };
       } catch (error) {
         console.error("Error creating user:", error);
         throw new Error("Unable to create user");
@@ -67,12 +69,11 @@ const userResolver = {
           throw new Error("Invalid password");
         }
 
-        const token = jwt.sign({ userId: user.id }, process.env.SECRET_KEY, {
-          expiresIn: "1h",
-        });
+        const token = jwt.sign({ id: user.id }, process.env.SECRET_KEY);
 
         console.log("login successful");
-        return { token, user };
+
+        return { ...user, token };
       } catch (error) {
         console.error("Error logging in:", error);
         throw new Error("Unable to log in");

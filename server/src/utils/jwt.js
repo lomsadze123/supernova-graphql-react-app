@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-const getUser = async (token) => {
+const getUser = (token) => {
   try {
     if (token) {
       console.log("autozation sucessfully");
