@@ -75,32 +75,6 @@ const Auth = () => {
               </div>
               <AuthErrorMessage error={errors.password} />
             </div>
-            {formType === "signup" && (
-              <div>
-                <label
-                  className={`text-xs ${
-                    errors.username ? "text-red-500" : "text-gray-900"
-                  }`}
-                  htmlFor="username"
-                >
-                  User name
-                </label>
-                <div
-                  className={`flex items-center gap-3 bg-white border ${
-                    errors.username ? "border-red-500" : "border-gray-300"
-                  } rounded-lg p-3 mt-1`}
-                >
-                  <input
-                    {...register("username")}
-                    className="w-full outline-none text-gray-800"
-                    type="text"
-                    placeholder="e.g Beka"
-                    id="username"
-                  />
-                </div>
-                <AuthErrorMessage error={errors.username} />
-              </div>
-            )}
             <button
               className="bg-blue-500 text-white p-3 font-semibold rounded-lg mt-4"
               type="submit"

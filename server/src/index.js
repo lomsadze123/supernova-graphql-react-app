@@ -16,10 +16,9 @@ initWebSocketServer(httpServer);
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: ({ req }) => {
-    const token = req.headers.authorization || "";
-    console.log("token", token);
-    const user = getUser(token);
+  context: async ({ req }) => {
+    const token = req.headers.authorization?.split(" ")[1] || "";
+    const user = await getUser(token);
     return { user };
   },
 });

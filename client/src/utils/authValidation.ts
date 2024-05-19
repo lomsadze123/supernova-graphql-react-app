@@ -1,22 +1,17 @@
 import * as z from "zod";
 
 const authValidation = () => {
-  const emailSchema = z.string().email();
-  const passwordSchema = z.string().min(6);
-  const usernameSchema = z.string().min(3);
+  const emailSchema = z.string().email("Email is required and must be valid.");
+  const passwordSchema = z
+    .string()
+    .min(6, "Password must be at least 6 characters long.");
 
-  const signUpSchema = z.object({
-    email: emailSchema,
-    password: passwordSchema,
-    username: usernameSchema,
-  });
-
-  const signInSchema = z.object({
+  const userCredentialsSchema = z.object({
     email: emailSchema,
     password: passwordSchema,
   });
 
-  return { signInSchema, signUpSchema };
+  return { userCredentialsSchema };
 };
 
 export default authValidation;

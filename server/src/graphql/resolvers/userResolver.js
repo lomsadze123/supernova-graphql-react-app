@@ -34,7 +34,6 @@ const userResolver = {
 
         const user = await prisma.user.create({
           data: {
-            username: input.username,
             email: input.email,
             password: hashedPassword,
           },

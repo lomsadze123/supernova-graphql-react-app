@@ -4,12 +4,24 @@ import authValidation from "../utils/authValidation";
 import { useMutation } from "@apollo/client";
 import { CREATE_USER, LOGIN_USER } from "../actions/userActions/userMutations";
 import { useNavigate } from "react-router-dom";
+import useUserContext from "../context/userContext";
 
 const useAuth = () => {
+  const { setToken } = useUserContext();
   const [formType, setFormType] = useState("signin");
-  const { signInSchema, signUpSchema } = authValidation();
-  const [createUser] = useMutation(CREATE_USER); // , { loading, error }
-  const [loginUser] = useMutation(LOGIN_USER);
+  const { userCredentialsSchema } = authValidation();
+  const [createUser] = useMutation(CREATE_USER, {
+    onCompleted: ({ createUser }) => {
+      setToken(createUser.token);
+      localStorage.setItem("token", createUser.token);
+    },
+  }); // , { loading, error }
+  const [loginUser] = useMutation(LOGIN_USER, {
+    onCompleted: ({ loginUser }) => {
+      setToken(loginUser.token);
+      localStorage.setItem("token", loginUser.token);
+    },
+  });
   const navigate = useNavigate();
   const {
     handleSubmit,
@@ -19,35 +31,27 @@ const useAuth = () => {
     trigger,
   } = useForm();
 
-  const getToken = () => localStorage.getItem("token");
+  const handleCreateUser = (data: any) => {
+    createUser({ variables: { input: data } });
+  };
+
+  const handleLoginUser = (data: any) => {
+    loginUser({ variables: { input: data } });
+  };
 
   const onSubmit = async (data: any) => {
     try {
       await trigger();
-      const schema = formType === "signin" ? signInSchema : signUpSchema;
-      const result = schema.safeParse(data);
+      const result = userCredentialsSchema.safeParse(data);
       if (result.success) {
         if (formType === "signin") {
-          const response = await loginUser({
-            variables: { input: data },
-            context: { headers: { Authorization: `Bearer ${getToken()}` } },
-          });
-          console.log("Logged in:", response.data.loginUser);
-          const { token, user } = response.data.loginUser;
-          localStorage.setItem("token", token);
-          localStorage.setItem(
-            "user",
-            JSON.stringify({ id: user.id, email: user.email })
-          );
-
+          handleLoginUser(data);
           reset();
-          navigate("/home");
         } else {
-          const response = await createUser({ variables: { input: data } });
-          console.log("User created:", response.data.createUser);
+          handleCreateUser(data);
           reset();
-          navigate("/home");
         }
+        navigate("/home");
       } else {
         console.log("Form contains errors, please fix them before submitting");
         console.log(result.error.errors);
@@ -56,6 +60,7 @@ const useAuth = () => {
       console.log("onsubmit error", error);
     }
   };
+
   return {
     setFormType,
     handleSubmit: handleSubmit(onSubmit),
