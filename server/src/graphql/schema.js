@@ -1,4 +1,4 @@
-import { gql } from "apollo-server-express";
+import { gql } from "apollo-server";
 
 const typeDefs = gql`
   type User {
@@ -25,7 +25,7 @@ const typeDefs = gql`
   }
 
   type Subscription {
-    globalSignInCount: Int
+    globalSignInCount: Int!
   }
 `;
 

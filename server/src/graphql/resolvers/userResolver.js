@@ -13,12 +13,9 @@ const generateToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.SECRET_KEY, { expiresIn: "1h" });
 };
 
+const SIGNIN_COUNT_UPDATED = "SIGNIN_COUNT_UPDATED";
+
 const userResolver = {
-  Subscription: {
-    globalSignInCount: {
-      subscribe: () => pubsub.asyncIterator("SIGNIN_COUNT_UPDATED"),
-    },
-  },
   Query: {
     users: async () => {
       try {
@@ -80,7 +77,7 @@ const userResolver = {
       }
     },
 
-    loginUser: async (_, { input }) => {
+    async loginUser(_, { input }) {
       try {
         const user = await prisma.user.findUnique({
           where: {
@@ -111,8 +108,10 @@ const userResolver = {
 
         const token = generateToken(updatedUser.id);
 
-        const globalSignInCount = await userResolver.Query.globalSignInCount();
-        pubsub.publish("SIGNIN_COUNT_UPDATED", { globalSignInCount });
+        const globalCount = await userResolver.Query.globalSignInCount();
+        pubsub.publish(SIGNIN_COUNT_UPDATED, {
+          globalSignInCount: globalCount,
+        });
 
         return { ...updatedUser, token };
       } catch (error) {
@@ -126,6 +125,11 @@ const userResolver = {
           throw new Error("Unable to log in");
         }
       }
+    },
+  },
+  Subscription: {
+    globalSignInCount: {
+      subscribe: () => pubsub.asyncIterator(SIGNIN_COUNT_UPDATED),
     },
   },
 };

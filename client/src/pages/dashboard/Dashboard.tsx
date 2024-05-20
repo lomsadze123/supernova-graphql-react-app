@@ -12,8 +12,6 @@ const Dashboard = () => {
     ? subscriptionData.globalSignInCount
     : globalData?.globalSignInCount;
 
-  console.log(globalSignInCount);
-
   return (
     <main className="p-4 mt-10">
       <div className="container mx-auto">

@@ -7,6 +7,9 @@ const resolvers = {
   Mutation: {
     ...userResolver.Mutation, // Include mutation resolvers from userResolver
   },
+  Subscription: {
+    ...userResolver.Subscription,
+  },
 };
 
 export default resolvers;
