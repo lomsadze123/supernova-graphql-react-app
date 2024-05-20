@@ -25,7 +25,7 @@ const typeDefs = gql`
   }
 
   type Subscription {
-    globalSignInCount: Int!
+    globalSignInCount: Int
   }
 `;
 

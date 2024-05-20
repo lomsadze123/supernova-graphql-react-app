@@ -4,8 +4,21 @@ import jwt from "jsonwebtoken";
 import { PubSub } from "graphql-subscriptions";
 
 const pubsub = new PubSub();
-const SIGNIN_COUNT_UPDATED = "SIGNIN_COUNT_UPDATED";
+
+const hashPassword = async (password) => {
+  return bcrypt.hash(password, 10);
+};
+
+const generateToken = (userId) => {
+  return jwt.sign({ id: userId }, process.env.SECRET_KEY, { expiresIn: "1h" });
+};
+
 const userResolver = {
+  Subscription: {
+    globalSignInCount: {
+      subscribe: () => pubsub.asyncIterator("SIGNIN_COUNT_UPDATED"),
+    },
+  },
   Query: {
     users: async () => {
       try {
@@ -48,7 +61,7 @@ const userResolver = {
   Mutation: {
     createUser: async (_, { input }) => {
       try {
-        const hashedPassword = await bcrypt.hash(input.password, 10);
+        const hashedPassword = await hashPassword(input.password);
 
         const user = await prisma.user.create({
           data: {
@@ -58,7 +71,7 @@ const userResolver = {
           },
         });
 
-        const token = jwt.sign({ id: user.id }, process.env.SECRET_KEY);
+        const token = generateToken(user.id);
 
         return { ...user, token };
       } catch (error) {
@@ -96,23 +109,23 @@ const userResolver = {
           },
         });
 
-        const token = jwt.sign({ id: updatedUser.id }, process.env.SECRET_KEY);
+        const token = generateToken(updatedUser.id);
 
         const globalSignInCount = await userResolver.Query.globalSignInCount();
-        pubsub.publish(SIGNIN_COUNT_UPDATED, { globalSignInCount });
+        pubsub.publish("SIGNIN_COUNT_UPDATED", { globalSignInCount });
 
-        console.log("login successful");
-
-        return { ...user, token };
+        return { ...updatedUser, token };
       } catch (error) {
         console.error("Error logging in:", error);
-        throw new Error("Unable to log in");
+        if (
+          error.message === "Invalid password" ||
+          error.message === "User not found"
+        ) {
+          throw new Error(error.message);
+        } else {
+          throw new Error("Unable to log in");
+        }
       }
-    },
-  },
-  Subscription: {
-    globalSignInCount: {
-      subscribe: () => pubsub.asyncIterator(SIGNIN_COUNT_UPDATED),
     },
   },
 };

@@ -7,14 +7,14 @@ export interface UserContextTypes {
   currentUser: {
     id: string;
     email: string;
+    signInCount: number;
     token: string;
-  };
+  } | null;
   loading: boolean;
   refetchGlobal: (
     variables?: Partial<OperationVariables> | undefined
   ) => Promise<ApolloQueryResult<any>>;
   globalData: any;
-  subscriptionData: any; // change later
 }
 
 export interface UserProviderProps {

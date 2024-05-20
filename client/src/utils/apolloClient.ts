@@ -13,8 +13,6 @@ const wsLink = new WebSocketLink({
   },
 });
 
-console.log("wsLink", wsLink);
-
 const splitLink = split(
   ({ query }) => {
     const definition = getMainDefinition(query);

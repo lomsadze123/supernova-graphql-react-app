@@ -3,9 +3,8 @@ import { UserContextTypes, UserProviderProps } from "../types/types";
 import {
   GET_CURRENT_USER,
   GLOBAL_SIGNIN_COUNT_QUERY,
-  GLOBAL_SIGNIN_COUNT_SUBSCRIPTION,
 } from "../actions/userActions/getUser";
-import { useQuery, useSubscription } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 
 const UserContext = createContext<UserContextTypes | undefined>(undefined);
 
@@ -19,8 +18,10 @@ const useUserContext = () => {
 
 export const UserProvider = ({ children }: UserProviderProps) => {
   const [token, setToken] = useState(localStorage.getItem("token"));
+  const [currentUser, setCurrentUser] =
+    useState<UserContextTypes["currentUser"]>(null);
   const {
-    data: currentUser,
+    data,
     refetch: refetchCurrentUser,
     loading,
   } = useQuery(GET_CURRENT_USER, {
@@ -35,21 +36,18 @@ export const UserProvider = ({ children }: UserProviderProps) => {
   const { data: globalData, refetch: refetchGlobal } = useQuery(
     GLOBAL_SIGNIN_COUNT_QUERY
   );
-  const { data: subscriptionData } = useSubscription(
-    GLOBAL_SIGNIN_COUNT_SUBSCRIPTION
-  );
+
+  useEffect(() => {
+    if (data && data.currentUser) {
+      setCurrentUser(data.currentUser);
+    }
+  }, [data]);
 
   useEffect(() => {
     if (token) {
       refetchCurrentUser();
     }
   }, [token, refetchCurrentUser]);
-
-  const globalSignInCount = subscriptionData
-    ? subscriptionData.globalSignInCount
-    : globalData?.globalSignInCount;
-
-  console.log("globalSignInCount", globalSignInCount);
 
   const contextValue: UserContextTypes = {
     token,
@@ -58,7 +56,6 @@ export const UserProvider = ({ children }: UserProviderProps) => {
     loading,
     refetchGlobal,
     globalData,
-    subscriptionData,
   };
 
   return (

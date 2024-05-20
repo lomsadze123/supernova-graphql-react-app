@@ -1,11 +1,7 @@
-import { FieldError, FieldErrorsImpl, Merge } from "react-hook-form";
-
-const AuthErrorMessage = (
-  error: FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined
-) => {
+const AuthErrorMessage = ({ error }: { error: string }) => {
   if (error) {
-    return typeof error.message === "string" ? (
-      <p className="text-xs text-red-500">{error.message} </p>
+    return typeof error === "string" ? (
+      <p className="text-xs text-red-500">{error} </p>
     ) : null;
   }
   return null;

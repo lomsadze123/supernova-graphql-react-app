@@ -1,14 +1,21 @@
 import useAuth from "../../hooks/useAuth";
-import { useQuery } from "@apollo/client";
-import { GET_USERS } from "../../actions/userActions/getUser";
 import AuthErrorMessage from "../../components/errors/AuthErrorMessage";
 
 const Auth = () => {
-  const { setFormType, handleSubmit, register, reset, formType, errors } =
-    useAuth();
+  const {
+    setFormType,
+    handleSubmit,
+    register,
+    reset,
+    formType,
+    errors,
+    loginUserError,
+  } = useAuth();
 
-  const { data } = useQuery(GET_USERS); //  loading, error,
-  console.log(data?.users);
+  const getErrorMessage = (field: string) => {
+    const error = errors.find((err) => err.path[0] === field);
+    return error ? error.message : "";
+  };
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -26,7 +33,7 @@ const Auth = () => {
             <div>
               <label
                 className={`text-xs ${
-                  errors.email ? "text-red-500" : "text-gray-900"
+                  getErrorMessage("email") ? "text-red-500" : "text-gray-900"
                 }`}
                 htmlFor="email"
               >
@@ -34,7 +41,9 @@ const Auth = () => {
               </label>
               <div
                 className={`flex items-center gap-3 bg-white border ${
-                  errors.email ? "border-red-500" : "border-gray-300"
+                  getErrorMessage("email")
+                    ? "border-red-500"
+                    : "border-gray-300"
                 } rounded-lg p-3 mt-1`}
               >
                 <input
@@ -45,12 +54,12 @@ const Auth = () => {
                   id="email"
                 />
               </div>
-              <AuthErrorMessage error={errors.email} />
+              <AuthErrorMessage error={getErrorMessage("email")} />
             </div>
             <div>
               <label
                 className={`text-xs ${
-                  errors.password ? "text-red-500" : "text-gray-900"
+                  getErrorMessage("password") ? "text-red-500" : "text-gray-900"
                 }`}
                 htmlFor="password"
               >
@@ -58,7 +67,9 @@ const Auth = () => {
               </label>
               <div
                 className={`flex items-center gap-3 bg-white border ${
-                  errors.password ? "border-red-500" : "border-gray-300"
+                  getErrorMessage("password")
+                    ? "border-red-500"
+                    : "border-gray-300"
                 } rounded-lg p-3 mt-1`}
               >
                 <input
@@ -73,7 +84,7 @@ const Auth = () => {
                   id="password"
                 />
               </div>
-              <AuthErrorMessage error={errors.password} />
+              <AuthErrorMessage error={getErrorMessage("password")} />
             </div>
             <button
               className="bg-blue-500 text-white p-3 font-semibold rounded-lg mt-4"
@@ -81,6 +92,9 @@ const Auth = () => {
             >
               {formType === "signin" ? "Login" : "Create new account"}
             </button>
+            {loginUserError && (
+              <p className="text-red-500 mt-2">{loginUserError.message}</p>
+            )}
           </div>
           <div className="text-center mt-4 flex flex-col gap-1 md:flex-row md:justify-center">
             <p className="text-gray-700">

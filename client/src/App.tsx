@@ -8,7 +8,7 @@ import Header from "./components/header/Header";
 
 const App = () => {
   const { currentUser, token } = useUserContext();
-  console.log(currentUser);
+  console.log("currentUser", currentUser);
 
   return (
     <>
