@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import useUserContext from "../context/userContext";
 import { ZodIssue } from "zod";
 import { toast } from "react-toastify";
+import { FormData } from "../types/types";
 
 const useAuth = () => {
   const { setToken, refetchGlobal } = useUserContext();
@@ -16,24 +17,20 @@ const useAuth = () => {
   const { handleSubmit, register, reset } = useForm();
   const [errors, setErrors] = useState<ZodIssue[]>([]);
 
+  const handleMutationCompletion = (data: any) => {
+    setToken(data.token);
+    localStorage.setItem("token", data.token);
+    refetchGlobal();
+    navigate("/home");
+  };
+
   const [createUser] = useMutation(CREATE_USER, {
-    onCompleted: ({ createUser }) => {
-      setToken(createUser.token);
-      localStorage.setItem("token", createUser.token);
-      refetchGlobal();
-      navigate("/home");
-    },
-  }); // , { loading, error }
+    onCompleted: ({ createUser }) => handleMutationCompletion(createUser),
+  });
   const [loginUser] = useMutation(LOGIN_USER, {
-    onCompleted: ({ loginUser }) => {
-      setToken(loginUser.token);
-      localStorage.setItem("token", loginUser.token);
-      refetchGlobal();
-      navigate("/home");
-    },
+    onCompleted: ({ loginUser }) => handleMutationCompletion(loginUser),
     onError: (error) => {
       if (error.message === "JsonWebTokenError: jwt expired") {
-        // Token expired, remove it from localStorage
         localStorage.removeItem("token");
         toast("Your session has expired. Please log in again.");
       } else {
@@ -42,11 +39,11 @@ const useAuth = () => {
     },
   });
 
-  const handleCreateUser = (data: any) => {
+  const handleCreateUser = (data: FormData) => {
     createUser({ variables: { input: data } });
   };
 
-  const handleLoginUser = (data: any) => {
+  const handleLoginUser = (data: FormData) => {
     loginUser({ variables: { input: data } });
   };
 
@@ -55,17 +52,14 @@ const useAuth = () => {
       const result = userCredentialsSchema.safeParse(data);
       if (result.success) {
         setErrors([]);
-        if (formType === "signin") {
-          handleLoginUser(data);
-        } else {
-          handleCreateUser(data);
-        }
+        formType === "signin" ? handleLoginUser(data) : handleCreateUser(data);
         reset();
       } else {
         setErrors(result.error.errors);
       }
     } catch (error) {
       console.log("onsubmit error", error);
+      toast("An unexpected error occurred. Please try again.");
     }
   };
 

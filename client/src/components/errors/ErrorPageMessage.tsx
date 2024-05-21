@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 const ErrorPageMessage = () => {
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
+    <div className="flex items-center justify-center mt-40">
       <div className="bg-white p-8 rounded shadow-lg text-center">
         <h1 className="text-3xl font-bold mb-4 text-red-600">Oops!</h1>
         <p className="text-lg text-gray-800">

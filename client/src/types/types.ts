@@ -1,5 +1,6 @@
 import { ApolloQueryResult, OperationVariables } from "@apollo/client";
 import { ReactNode } from "react";
+import { FieldValues, UseFormRegister } from "react-hook-form";
 
 export interface UserContextTypes {
   token: string | null;
@@ -19,4 +20,18 @@ export interface UserContextTypes {
 
 export interface UserProviderProps {
   children: ReactNode;
+}
+
+export interface FormData {
+  email: string;
+  password: string;
+}
+
+export interface InputFieldTypes {
+  label: string;
+  type: string;
+  id: string;
+  placeholder: string;
+  register: UseFormRegister<FieldValues>;
+  error: string;
 }

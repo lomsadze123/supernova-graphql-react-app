@@ -1,7 +1,7 @@
+import FormInput from "../../components/form/FormInput";
 import useAuth from "../../hooks/useAuth";
-import AuthErrorMessage from "../../components/errors/AuthErrorMessage";
 
-const Auth = () => {
+export const Auth = () => {
   const { setFormType, handleSubmit, register, formType, errors } = useAuth();
 
   const getErrorMessage = (field: string) => {
@@ -22,65 +22,29 @@ const Auth = () => {
               : "Let's get you started sharing your links!"}
           </p>
           <div className="flex flex-col gap-5 mt-6">
-            <div>
-              <label
-                className={`text-xs ${
-                  getErrorMessage("email") ? "text-red-500" : "text-gray-900"
-                }`}
-                htmlFor="email"
-              >
-                Email address
-              </label>
-              <div
-                className={`flex items-center gap-3 bg-white border ${
-                  getErrorMessage("email")
-                    ? "border-red-500"
-                    : "border-gray-300"
-                } rounded-lg p-3 mt-1`}
-              >
-                <input
-                  {...register("email")}
-                  className="w-full outline-none text-gray-800"
-                  type="email"
-                  placeholder="e.g. beka@gmail.com"
-                  id="email"
-                />
-              </div>
-              <AuthErrorMessage error={getErrorMessage("email")} />
-            </div>
-            <div>
-              <label
-                className={`text-xs ${
-                  getErrorMessage("password") ? "text-red-500" : "text-gray-900"
-                }`}
-                htmlFor="password"
-              >
-                {formType === "signin" ? "Password" : "Create password"}
-              </label>
-              <div
-                className={`flex items-center gap-3 bg-white border ${
-                  getErrorMessage("password")
-                    ? "border-red-500"
-                    : "border-gray-300"
-                } rounded-lg p-3 mt-1`}
-              >
-                <input
-                  {...register("password")}
-                  className="w-full outline-none text-gray-800"
-                  type="password"
-                  placeholder={
-                    formType === "signin"
-                      ? "Enter your password"
-                      : "At least 6 characters"
-                  }
-                  id="password"
-                />
-              </div>
-              <AuthErrorMessage error={getErrorMessage("password")} />
-            </div>
+            <FormInput
+              label="Email address"
+              type="email"
+              id="email"
+              placeholder="e.g. beka@gmail.com"
+              register={register}
+              error={getErrorMessage("email")}
+            />
+            <FormInput
+              label={formType === "signin" ? "Password" : "Create password"}
+              type="password"
+              id="password"
+              placeholder={
+                formType === "signin"
+                  ? "Enter your password"
+                  : "At least 6 characters"
+              }
+              register={register}
+              error={getErrorMessage("password")}
+            />
             <button
               className="bg-blue-500 text-white p-3 font-semibold rounded-lg mt-4"
-              // type="submit"
+              type="submit"
             >
               {formType === "signin" ? "Login" : "Create new account"}
             </button>

@@ -22,8 +22,9 @@ export const UserProvider = ({ children }: UserProviderProps) => {
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [currentUser, setCurrentUser] =
     useState<UserContextTypes["currentUser"]>(null);
+
   const {
-    data,
+    data: userData,
     refetch: refetchCurrentUser,
     loading,
   } = useQuery(GET_CURRENT_USER, {
@@ -46,19 +47,17 @@ export const UserProvider = ({ children }: UserProviderProps) => {
     ? subscriptionData.globalSignInCount
     : globalData?.globalSignInCount;
 
-  const notify = () => toast("Global sign in count is 5!");
-
   useEffect(() => {
     if (globalSignInCount === 5 && location.pathname !== "/") {
-      notify();
+      toast("Global sign in count is 5!");
     }
   }, [globalSignInCount, location.pathname]);
 
   useEffect(() => {
-    if (data && data.currentUser) {
-      setCurrentUser(data.currentUser);
+    if (userData && userData.currentUser) {
+      setCurrentUser(userData.currentUser);
     }
-  }, [data]);
+  }, [userData]);
 
   useEffect(() => {
     if (token) {
