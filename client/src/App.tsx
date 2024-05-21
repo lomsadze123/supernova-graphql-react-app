@@ -5,6 +5,8 @@ import Dashboard from "./pages/dashboard/Dashboard";
 import ErrorPage from "./pages/error/ErrorPage";
 import useUserContext from "./context/userContext";
 import Header from "./components/header/Header";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
   const { currentUser, token } = useUserContext();
@@ -13,6 +15,7 @@ const App = () => {
   return (
     <>
       {token && <Header />}
+      <ToastContainer />
       <Routes>
         <Route path="/" element={token ? <Navigate to="/home" /> : <Auth />} />
         <Route

@@ -3,8 +3,10 @@ import { UserContextTypes, UserProviderProps } from "../types/types";
 import {
   GET_CURRENT_USER,
   GLOBAL_SIGNIN_COUNT_QUERY,
+  GLOBAL_SIGNIN_COUNT_SUBSCRIPTION,
 } from "../actions/userActions/getUser";
-import { useQuery } from "@apollo/client";
+import { useQuery, useSubscription } from "@apollo/client";
+import { toast } from "react-toastify";
 
 const UserContext = createContext<UserContextTypes | undefined>(undefined);
 
@@ -36,6 +38,21 @@ export const UserProvider = ({ children }: UserProviderProps) => {
   const { data: globalData, refetch: refetchGlobal } = useQuery(
     GLOBAL_SIGNIN_COUNT_QUERY
   );
+  const { data: subscriptionData } = useSubscription(
+    GLOBAL_SIGNIN_COUNT_SUBSCRIPTION
+  );
+
+  const globalSignInCount = subscriptionData
+    ? subscriptionData.globalSignInCount
+    : globalData?.globalSignInCount;
+
+  const notify = () => toast("Global sign in count is 5!");
+
+  useEffect(() => {
+    if (globalSignInCount === 5 && location.pathname !== "/") {
+      notify();
+    }
+  }, [globalSignInCount, location.pathname]);
 
   useEffect(() => {
     if (data && data.currentUser) {
@@ -55,7 +72,7 @@ export const UserProvider = ({ children }: UserProviderProps) => {
     currentUser,
     loading,
     refetchGlobal,
-    globalData,
+    globalSignInCount,
   };
 
   return (

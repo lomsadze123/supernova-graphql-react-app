@@ -14,7 +14,7 @@ export interface UserContextTypes {
   refetchGlobal: (
     variables?: Partial<OperationVariables> | undefined
   ) => Promise<ApolloQueryResult<any>>;
-  globalData: any;
+  globalSignInCount: number;
 }
 
 export interface UserProviderProps {
