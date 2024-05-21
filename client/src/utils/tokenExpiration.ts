@@ -19,7 +19,6 @@ const removeExpiredToken = () => {
       }
     } catch (error) {
       console.error("Error decoding token:", error);
-      // Remove the token if it's invalid or corrupt
       localStorage.removeItem("token");
     }
   }

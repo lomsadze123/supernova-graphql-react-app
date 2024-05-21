@@ -1,5 +1,6 @@
 import { gql } from "@apollo/client";
 
+// GraphQL mutation to create a new user
 const CREATE_USER = gql`
   mutation CreateUser($input: UserCredentialsInput!) {
     createUser(input: $input) {

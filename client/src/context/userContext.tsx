@@ -4,7 +4,7 @@ import {
   GET_CURRENT_USER,
   GLOBAL_SIGNIN_COUNT_QUERY,
   GLOBAL_SIGNIN_COUNT_SUBSCRIPTION,
-} from "../actions/userActions/getUser";
+} from "../actions/getUser";
 import { useQuery, useSubscription } from "@apollo/client";
 import { toast } from "react-toastify";
 
@@ -23,6 +23,7 @@ export const UserProvider = ({ children }: UserProviderProps) => {
   const [currentUser, setCurrentUser] =
     useState<UserContextTypes["currentUser"]>(null);
 
+  // Query to fetch current user data
   const {
     data: userData,
     refetch: refetchCurrentUser,
@@ -36,13 +37,16 @@ export const UserProvider = ({ children }: UserProviderProps) => {
     },
   });
 
+  // Query to fetch global sign-in count
   const { data: globalData, refetch: refetchGlobal } = useQuery(
     GLOBAL_SIGNIN_COUNT_QUERY
   );
+  // Subscription to get updates on global sign-in count
   const { data: subscriptionData } = useSubscription(
     GLOBAL_SIGNIN_COUNT_SUBSCRIPTION
   );
 
+  // Extract global sign-in count from subscription or query data
   const globalSignInCount = subscriptionData
     ? subscriptionData.globalSignInCount
     : globalData?.globalSignInCount;

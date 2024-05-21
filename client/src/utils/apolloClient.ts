@@ -13,9 +13,11 @@ const wsLink = new WebSocketLink({
   },
 });
 
+// Split the link based on the operation type
 const splitLink = split(
   ({ query }) => {
     const definition = getMainDefinition(query);
+    // Route subscription operations to the WebSocket link and others to the HTTP link
     return (
       definition.kind === "OperationDefinition" &&
       definition.operation === "subscription"
@@ -25,6 +27,7 @@ const splitLink = split(
   httpLink
 );
 
+// Create an Apollo Client instance with the split link and an in-memory cache
 const client = new ApolloClient({
   link: splitLink,
   cache: new InMemoryCache(),

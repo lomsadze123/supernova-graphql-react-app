@@ -12,12 +12,12 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-gray-800 py-4">
-      <nav className="container mx-auto flex items-center justify-between">
+    <header className="bg-gray-800 py-4 md:py-6">
+      <nav className="container mx-auto flex items-center justify-between text-lg md:text-2xl">
         <div>
           <NavLink
             to="/home"
-            className="text-white font-bold text-lg lg:hover:text-gray-400"
+            className="text-white font-bold lg:hover:text-gray-400"
           >
             Home
           </NavLink>

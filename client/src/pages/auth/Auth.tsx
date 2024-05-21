@@ -19,7 +19,7 @@ export const Auth = () => {
           <p className="text-gray-700 text-xl">
             {formType === "signin"
               ? "Welcome back! Please log in to continue"
-              : "Let's get you started sharing your links!"}
+              : "Please complete the form below to create your account!"}
           </p>
           <div className="flex flex-col gap-5 mt-6">
             <FormInput

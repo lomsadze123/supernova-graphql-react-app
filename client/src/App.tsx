@@ -12,8 +12,7 @@ const Dashboard = lazy(() => import("./pages/dashboard/Dashboard"));
 const ErrorPage = lazy(() => import("./pages/error/ErrorPage"));
 
 const App = () => {
-  const { currentUser, token } = useUserContext();
-  console.log("currentUser", currentUser);
+  const { token } = useUserContext();
 
   useEffect(() => {
     removeExpiredToken();

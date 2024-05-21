@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import authValidation from "../utils/authValidation";
 import { useMutation } from "@apollo/client";
-import { CREATE_USER, LOGIN_USER } from "../actions/userActions/userMutations";
+import { CREATE_USER, LOGIN_USER } from "../actions/userMutations";
 import { useNavigate } from "react-router-dom";
 import useUserContext from "../context/userContext";
 import { ZodIssue } from "zod";
@@ -17,6 +17,7 @@ const useAuth = () => {
   const { handleSubmit, register, reset } = useForm();
   const [errors, setErrors] = useState<ZodIssue[]>([]);
 
+  // Function to handle completion of mutation (signup or signin)
   const handleMutationCompletion = (data: any) => {
     setToken(data.token);
     localStorage.setItem("token", data.token);
@@ -24,9 +25,11 @@ const useAuth = () => {
     navigate("/home");
   };
 
+  // Mutation hook for creating a new user
   const [createUser] = useMutation(CREATE_USER, {
     onCompleted: ({ createUser }) => handleMutationCompletion(createUser),
   });
+
   const [loginUser] = useMutation(LOGIN_USER, {
     onCompleted: ({ loginUser }) => handleMutationCompletion(loginUser),
     onError: (error) => {
@@ -47,6 +50,12 @@ const useAuth = () => {
     loginUser({ variables: { input: data } });
   };
 
+  const switchFormType = (type: string) => {
+    setFormType(type);
+    setErrors([]);
+    reset();
+  };
+
   const onSubmit = async (data: any) => {
     try {
       const result = userCredentialsSchema.safeParse(data);
@@ -61,12 +70,6 @@ const useAuth = () => {
       console.log("onsubmit error", error);
       toast("An unexpected error occurred. Please try again.");
     }
-  };
-
-  const switchFormType = (type: string) => {
-    setFormType(type);
-    setErrors([]);
-    reset();
   };
 
   return {
