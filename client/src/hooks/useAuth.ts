@@ -26,14 +26,14 @@ const useAuth = () => {
   };
 
   // Mutation hook for creating a new user
-  const [createUser] = useMutation(CREATE_USER, {
+  const [createUser, { loading: registerLoading }] = useMutation(CREATE_USER, {
     onCompleted: ({ createUser }) => handleMutationCompletion(createUser),
     onError: () => {
       toast("Email must be unique!");
     },
   });
 
-  const [loginUser] = useMutation(LOGIN_USER, {
+  const [loginUser, { loading: loginLoading }] = useMutation(LOGIN_USER, {
     onCompleted: ({ loginUser }) => handleMutationCompletion(loginUser),
     onError: (error) => {
       toast(error.message + "!");
@@ -77,6 +77,8 @@ const useAuth = () => {
     reset,
     formType,
     errors,
+    registerLoading,
+    loginLoading,
   };
 };
 

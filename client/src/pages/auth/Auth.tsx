@@ -2,12 +2,22 @@ import FormInput from "../../components/form/FormInput";
 import useAuth from "../../hooks/useAuth";
 
 export const Auth = () => {
-  const { setFormType, handleSubmit, register, formType, errors } = useAuth();
+  const {
+    setFormType,
+    handleSubmit,
+    register,
+    formType,
+    errors,
+    loginLoading,
+    registerLoading,
+  } = useAuth();
 
   const getErrorMessage = (field: string) => {
     const error = errors.find((err) => err.path[0] === field);
     return error ? error.message : "";
   };
+
+  const isLoading = formType === "signin" ? loginLoading : registerLoading;
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -46,7 +56,11 @@ export const Auth = () => {
               className="bg-blue-500 text-white p-3 font-semibold rounded-lg mt-4"
               type="submit"
             >
-              {formType === "signin" ? "Login" : "Create new account"}
+              {isLoading
+                ? "Processing..."
+                : formType === "signin"
+                ? "Login"
+                : "Create new account"}
             </button>
           </div>
           <div className="text-center mt-4 flex flex-col gap-1 md:flex-row md:justify-center">
