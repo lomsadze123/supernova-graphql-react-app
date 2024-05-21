@@ -9,7 +9,6 @@ const typeDefs = gql`
   }
 
   type Query {
-    users: [User]
     currentUser: User
     globalSignInCount: Int!
   }

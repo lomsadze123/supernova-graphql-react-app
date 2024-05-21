@@ -7,10 +7,16 @@ import useUserContext from "./context/userContext";
 import Header from "./components/header/Header";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useEffect } from "react";
+import removeExpiredToken from "./utils/tokenExpiration";
 
 const App = () => {
   const { currentUser, token } = useUserContext();
   console.log("currentUser", currentUser);
+
+  useEffect(() => {
+    removeExpiredToken();
+  }, [location]);
 
   return (
     <>

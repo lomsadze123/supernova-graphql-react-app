@@ -1,44 +1,37 @@
 import prisma from "../../../lib/prisma.js";
+import { generateToken, hashPassword } from "../../utils/jwt.js";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { PubSub } from "graphql-subscriptions";
 
 const pubsub = new PubSub();
 
-const hashPassword = async (password) => {
-  return bcrypt.hash(password, 10);
-};
-
-const generateToken = (userId) => {
-  return jwt.sign({ id: userId }, process.env.SECRET_KEY, { expiresIn: "1h" });
-};
-
-const SIGNIN_COUNT_UPDATED = "SIGNIN_COUNT_UPDATED";
-
 const userResolver = {
   Query: {
-    users: async () => {
+    // Fetch the current authenticated user
+    currentUser: async (_, __, { user }) => {
       try {
-        const users = await prisma.user.findMany();
-        console.log(users);
-        return users;
+        if (!user) {
+          throw new Error("Not authenticated");
+        }
+
+        const currentUser = await prisma.user.findUnique({
+          where: {
+            id: user.id,
+          },
+        });
+
+        if (!currentUser) {
+          throw new Error("User not found");
+        }
+
+        return currentUser;
       } catch (error) {
-        console.error("Error fetching users:", error);
-        throw new Error("Unable to fetch users");
+        console.error("Error fetching current user:", error);
+        throw new Error("Unable to fetch current user");
       }
     },
 
-    currentUser: async (_, args, { user }) => {
-      if (!user) {
-        throw new Error("Not authenticated");
-      }
-      return prisma.user.findUnique({
-        where: {
-          id: user.id,
-        },
-      });
-    },
-
+    // Get the total sign-in count of all users
     globalSignInCount: async () => {
       try {
         const globalSignInCount = await prisma.user.aggregate({
@@ -70,6 +63,8 @@ const userResolver = {
 
         const token = generateToken(user.id);
 
+        console.log("Created new user", user);
+
         return { ...user, token };
       } catch (error) {
         console.error("Error creating user:", error);
@@ -85,8 +80,6 @@ const userResolver = {
           },
         });
 
-        console.log("user", user);
-
         if (!user) {
           throw new Error("User not found");
         }
@@ -97,6 +90,7 @@ const userResolver = {
           throw new Error("Invalid password");
         }
 
+        // Update the user's sign-in count
         const updatedUser = await prisma.user.update({
           where: {
             id: user.id,
@@ -108,8 +102,9 @@ const userResolver = {
 
         const token = generateToken(updatedUser.id);
 
+        // Publish the updated global sign-in count (live)
         const globalCount = await userResolver.Query.globalSignInCount();
-        pubsub.publish(SIGNIN_COUNT_UPDATED, {
+        pubsub.publish(process.env.SIGNIN_COUNT_UPDATED, {
           globalSignInCount: globalCount,
         });
 
@@ -128,8 +123,9 @@ const userResolver = {
     },
   },
   Subscription: {
+    // Subscription for global sign-in count updates
     globalSignInCount: {
-      subscribe: () => pubsub.asyncIterator(SIGNIN_COUNT_UPDATED),
+      subscribe: () => pubsub.asyncIterator(process.env.SIGNIN_COUNT_UPDATED),
     },
   },
 };

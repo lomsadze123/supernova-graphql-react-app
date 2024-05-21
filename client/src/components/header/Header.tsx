@@ -17,7 +17,7 @@ const Header = () => {
         <div>
           <NavLink
             to="/home"
-            className="text-white font-bold text-lg hover:text-gray-400"
+            className="text-white font-bold text-lg lg:hover:text-gray-400"
           >
             Home
           </NavLink>
@@ -25,7 +25,7 @@ const Header = () => {
         <div>
           <NavLink
             to="/dashboard"
-            className="text-white font-semibold hover:text-gray-400 mr-4"
+            className="text-white font-semibold lg:hover:text-gray-400 mr-4"
           >
             Dashboard
           </NavLink>

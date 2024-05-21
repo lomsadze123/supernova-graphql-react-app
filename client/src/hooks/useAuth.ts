@@ -6,34 +6,41 @@ import { CREATE_USER, LOGIN_USER } from "../actions/userActions/userMutations";
 import { useNavigate } from "react-router-dom";
 import useUserContext from "../context/userContext";
 import { ZodIssue } from "zod";
+import { toast } from "react-toastify";
 
 const useAuth = () => {
   const { setToken, refetchGlobal } = useUserContext();
   const [formType, setFormType] = useState("signin");
   const { userCredentialsSchema } = authValidation();
+  const navigate = useNavigate();
+  const { handleSubmit, register, reset } = useForm();
+  const [errors, setErrors] = useState<ZodIssue[]>([]);
+
   const [createUser] = useMutation(CREATE_USER, {
     onCompleted: ({ createUser }) => {
       setToken(createUser.token);
       localStorage.setItem("token", createUser.token);
       refetchGlobal();
+      navigate("/home");
     },
   }); // , { loading, error }
-  const [loginUser, { error: loginUserError }] = useMutation(LOGIN_USER, {
+  const [loginUser] = useMutation(LOGIN_USER, {
     onCompleted: ({ loginUser }) => {
       setToken(loginUser.token);
       localStorage.setItem("token", loginUser.token);
       refetchGlobal();
+      navigate("/home");
     },
     onError: (error) => {
-      // Handle login user error here
-      console.error("Error logging in user:", error);
-      // You can set an error state or display an error message
+      if (error.message === "JsonWebTokenError: jwt expired") {
+        // Token expired, remove it from localStorage
+        localStorage.removeItem("token");
+        toast("Your session has expired. Please log in again.");
+      } else {
+        toast(error.message);
+      }
     },
   });
-  const navigate = useNavigate();
-  const { handleSubmit, register, reset, trigger } = useForm();
-
-  const [errors, setErrors] = useState<ZodIssue[]>([]);
 
   const handleCreateUser = (data: any) => {
     createUser({ variables: { input: data } });
@@ -43,29 +50,18 @@ const useAuth = () => {
     loginUser({ variables: { input: data } });
   };
 
-  if (loginUserError) {
-    console.log("login error", loginUserError);
-  }
-
   const onSubmit = async (data: any) => {
     try {
-      await trigger();
       const result = userCredentialsSchema.safeParse(data);
-      console.log(result.success);
-
       if (result.success) {
         setErrors([]);
         if (formType === "signin") {
           handleLoginUser(data);
-          reset();
         } else {
           handleCreateUser(data);
-          reset();
         }
-        navigate("/home");
+        reset();
       } else {
-        console.log("Form contains errors, please fix them before submitting");
-        console.log(result.error.errors);
         setErrors(result.error.errors);
       }
     } catch (error) {
@@ -73,14 +69,19 @@ const useAuth = () => {
     }
   };
 
+  const switchFormType = (type: string) => {
+    setFormType(type);
+    setErrors([]);
+    reset();
+  };
+
   return {
-    setFormType,
+    setFormType: switchFormType,
     handleSubmit: handleSubmit(onSubmit),
     register,
     reset,
     formType,
     errors,
-    loginUserError,
   };
 };
 

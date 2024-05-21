@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
 const getUser = async (token) => {
   if (!token) return null;
@@ -10,4 +11,12 @@ const getUser = async (token) => {
   }
 };
 
-export default getUser;
+const generateToken = (userId) => {
+  return jwt.sign({ id: userId }, process.env.SECRET_KEY, { expiresIn: "1d" });
+};
+
+const hashPassword = async (password) => {
+  return bcrypt.hash(password, 10);
+};
+
+export { getUser, generateToken, hashPassword };

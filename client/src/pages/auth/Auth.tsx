@@ -2,15 +2,7 @@ import useAuth from "../../hooks/useAuth";
 import AuthErrorMessage from "../../components/errors/AuthErrorMessage";
 
 const Auth = () => {
-  const {
-    setFormType,
-    handleSubmit,
-    register,
-    reset,
-    formType,
-    errors,
-    loginUserError,
-  } = useAuth();
+  const { setFormType, handleSubmit, register, formType, errors } = useAuth();
 
   const getErrorMessage = (field: string) => {
     const error = errors.find((err) => err.path[0] === field);
@@ -88,13 +80,10 @@ const Auth = () => {
             </div>
             <button
               className="bg-blue-500 text-white p-3 font-semibold rounded-lg mt-4"
-              type="submit"
+              // type="submit"
             >
               {formType === "signin" ? "Login" : "Create new account"}
             </button>
-            {loginUserError && (
-              <p className="text-red-500 mt-2">{loginUserError.message}</p>
-            )}
           </div>
           <div className="text-center mt-4 flex flex-col gap-1 md:flex-row md:justify-center">
             <p className="text-gray-700">
@@ -103,9 +92,9 @@ const Auth = () => {
                 : "Already have an account?"}
             </p>
             <button
+              type="button"
               onClick={() => {
                 setFormType(formType === "signin" ? "signup" : "signin");
-                reset();
               }}
               className="text-blue-500"
             >
