@@ -2,12 +2,18 @@ import { ApolloClient, HttpLink, InMemoryCache, split } from "@apollo/client";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { getMainDefinition } from "@apollo/client/utilities";
 
+const DEV_MODE = "development";
+
 const httpLink = new HttpLink({
-  uri: "https://supernova-graphql-react-app.onrender.com/graphql", // http://localhost:3001/graphql    https://supernova-graphql-react-app.onrender.com/graphql
+  uri: DEV_MODE
+    ? "http://localhost:3001/graphql"
+    : "https://supernova-graphql-react-app.onrender.com/graphql",
 });
 
 const wsLink = new WebSocketLink({
-  uri: `wss://supernova-graphql-react-app.onrender.com/graphql`, // ws://localhost:3001/graphql     wss://supernova-graphql-react-app.onrender.com/graphql
+  uri: DEV_MODE
+    ? "ws://localhost:3001/graphql"
+    : "wss://supernova-graphql-react-app.onrender.com/graphql",
   options: {
     reconnect: true,
   },

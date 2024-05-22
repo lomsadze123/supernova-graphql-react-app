@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import authValidation from "../utils/authValidation";
 import { useMutation } from "@apollo/client";
 import { CREATE_USER, LOGIN_USER } from "../actions/userMutations";
@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import useUserContext from "../context/userContext";
 import { ZodIssue } from "zod";
 import { toast } from "react-toastify";
-import { FormData } from "../types/types";
 
 const useAuth = () => {
   const { setToken, refetchGlobal } = useUserContext();
@@ -18,7 +17,7 @@ const useAuth = () => {
   const [errors, setErrors] = useState<ZodIssue[]>([]);
 
   // Function to handle completion of mutation (signup or signin)
-  const handleMutationCompletion = (data: any) => {
+  const handleMutationCompletion = (data: { token: string }) => {
     setToken(data.token);
     localStorage.setItem("token", data.token);
     refetchGlobal();
@@ -40,11 +39,11 @@ const useAuth = () => {
     },
   });
 
-  const handleCreateUser = (data: FormData) => {
+  const handleCreateUser = (data: FieldValues) => {
     createUser({ variables: { input: data } });
   };
 
-  const handleLoginUser = (data: FormData) => {
+  const handleLoginUser = (data: FieldValues) => {
     loginUser({ variables: { input: data } });
   };
 
@@ -54,7 +53,7 @@ const useAuth = () => {
     reset();
   };
 
-  const onSubmit = async (data: any) => {
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     try {
       const result = userCredentialsSchema.safeParse(data);
       if (result.success) {

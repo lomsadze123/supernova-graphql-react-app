@@ -22,11 +22,6 @@ export interface UserProviderProps {
   children: ReactNode;
 }
 
-export interface FormData {
-  email: string;
-  password: string;
-}
-
 export interface InputFieldTypes {
   label: string;
   type: string;
